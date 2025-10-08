@@ -1,0 +1,21 @@
+[project]
+name = "sample-ai-workflows-in-aws-lambda-durable-functions"
+version = "0.1.0"
+description = "AI Workflows in AWS Lambda Durable Functions - Python"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "aws-durable-execution-sdk-python",
+    "pydantic",
+    "pytest",
+    "pytest-mock",
+    "ruff>=0.14.6",
+    "boto3"
+]
+
+
+[dependency-groups]
+dev = [
+    "ty>=0.0.1a28",
+    "aws-durable-execution-sdk-python-testing",
+]

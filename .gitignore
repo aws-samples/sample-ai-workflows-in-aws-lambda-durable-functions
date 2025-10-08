@@ -1,0 +1,15 @@
+cdk.out
+node_modules
+.claude
+.kiro
+.vscode
+.aws-sam/
+**/dist/
+**/packages/
+__pycache__
+requirements.txt
+samconfig.toml
+build.sh
+*.zip
+.pytest_cache
+.venv

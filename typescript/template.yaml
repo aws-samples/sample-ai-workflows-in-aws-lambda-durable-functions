@@ -1,0 +1,251 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: "AI Workflows in AWS Lambda Durable Functions - TypeScript (uksb-qfdtv4ip1c) (tag: typescript)"
+
+Globals:
+  Function:
+    Runtime: nodejs22.x
+    Timeout: 30
+    MemorySize: 256
+    Architectures:
+      - arm64
+
+Resources:
+  DurableFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: DurableExecutionPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - lambda:CheckpointDurableExecution
+                  - lambda:GetDurableExecutionState
+                Resource: !Sub "arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:*"
+        - PolicyName: BedrockPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - bedrock:InvokeModel
+                Resource:
+                  - "arn:aws:bedrock:*::foundation-model/*"
+                  - "arn:aws:bedrock:*:*:inference-profile/*"
+
+  PromptChainingFunction:
+    Type: AWS::Serverless::Function
+    # checkov:skip=CKV_AWS_115:Reserved concurrency not appropriate
+    # checkov:skip=CKV_AWS_116:DLQ not appropriate
+    # checkov:skip=CKV_AWS_117:VPC not appropriate
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: false
+        Target: es2022
+        Sourcemap: false
+        EntryPoints:
+          - src/prompt-chaining.ts
+        Format: esm
+        OutExtension:
+          - .js=.mjs
+        Banner:
+          - js=import { createRequire } from 'module'; const require = createRequire(import.meta.url);
+      cfn_nag:
+        rules_to_suppress:
+          - id: W89
+            reason: VPC not appropriate
+          - id: W92
+            reason: Reserved concurrency not appropriate
+    Properties:
+      Handler: prompt-chaining.handler
+      CodeUri: .
+      Role: !GetAtt DurableFunctionRole.Arn
+      DurableConfig:
+        ExecutionTimeout: 900
+        RetentionPeriodInDays: 7
+
+  LlmAsJudgeFunction:
+    Type: AWS::Serverless::Function
+    # checkov:skip=CKV_AWS_115:Reserved concurrency not appropriate
+    # checkov:skip=CKV_AWS_116:DLQ not appropriate
+    # checkov:skip=CKV_AWS_117:VPC not appropriate
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: false
+        Target: es2022
+        Sourcemap: false
+        EntryPoints:
+          - src/llm-as-judge.ts
+        Format: esm
+        OutExtension:
+          - .js=.mjs
+        Banner:
+          - js=import { createRequire } from 'module'; const require = createRequire(import.meta.url);
+      cfn_nag:
+        rules_to_suppress:
+          - id: W89
+            reason: VPC not appropriate
+          - id: W92
+            reason: Reserved concurrency not appropriate
+    Properties:
+      Handler: llm-as-judge.handler
+      CodeUri: .
+      Role: !GetAtt DurableFunctionRole.Arn
+      DurableConfig:
+        ExecutionTimeout: 900
+        RetentionPeriodInDays: 7
+
+  HumanReviewFunction:
+    Type: AWS::Serverless::Function
+    # checkov:skip=CKV_AWS_115:Reserved concurrency not appropriate
+    # checkov:skip=CKV_AWS_116:DLQ not appropriate
+    # checkov:skip=CKV_AWS_117:VPC not appropriate
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: false
+        Target: es2022
+        Sourcemap: false
+        EntryPoints:
+          - src/human-review.ts
+        Format: esm
+        OutExtension:
+          - .js=.mjs
+        Banner:
+          - js=import { createRequire } from 'module'; const require = createRequire(import.meta.url);
+      cfn_nag:
+        rules_to_suppress:
+          - id: W89
+            reason: VPC not appropriate
+          - id: W92
+            reason: Reserved concurrency not appropriate
+    Properties:
+      Handler: human-review.handler
+      CodeUri: .
+      Role: !GetAtt DurableFunctionRole.Arn
+      DurableConfig:
+        ExecutionTimeout: 900
+        RetentionPeriodInDays: 7
+
+  AgentFunction:
+    Type: AWS::Serverless::Function
+    # checkov:skip=CKV_AWS_115:Reserved concurrency not appropriate
+    # checkov:skip=CKV_AWS_116:DLQ not appropriate
+    # checkov:skip=CKV_AWS_117:VPC not appropriate
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: false
+        Target: es2022
+        Sourcemap: false
+        EntryPoints:
+          - src/agent.ts
+        Format: esm
+        OutExtension:
+          - .js=.mjs
+        Banner:
+          - js=import { createRequire } from 'module'; const require = createRequire(import.meta.url);
+      cfn_nag:
+        rules_to_suppress:
+          - id: W89
+            reason: VPC not appropriate
+          - id: W92
+            reason: Reserved concurrency not appropriate
+    Properties:
+      Handler: agent.handler
+      CodeUri: .
+      Role: !GetAtt DurableFunctionRole.Arn
+      DurableConfig:
+        ExecutionTimeout: 900
+        RetentionPeriodInDays: 7
+
+  ParallelInvocationFunction:
+    Type: AWS::Serverless::Function
+    # checkov:skip=CKV_AWS_115:Reserved concurrency not appropriate
+    # checkov:skip=CKV_AWS_116:DLQ not appropriate
+    # checkov:skip=CKV_AWS_117:VPC not appropriate
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: false
+        Target: es2022
+        Sourcemap: false
+        EntryPoints:
+          - src/parallel-invocation.ts
+        Format: esm
+        OutExtension:
+          - .js=.mjs
+        Banner:
+          - js=import { createRequire } from 'module'; const require = createRequire(import.meta.url);
+      cfn_nag:
+        rules_to_suppress:
+          - id: W89
+            reason: VPC not appropriate
+          - id: W92
+            reason: Reserved concurrency not appropriate
+    Properties:
+      Handler: parallel-invocation.handler
+      CodeUri: .
+      Role: !GetAtt DurableFunctionRole.Arn
+      DurableConfig:
+        ExecutionTimeout: 900
+        RetentionPeriodInDays: 7
+
+  StructuredOutputFunction:
+    Type: AWS::Serverless::Function
+    # checkov:skip=CKV_AWS_115:Reserved concurrency not appropriate
+    # checkov:skip=CKV_AWS_116:DLQ not appropriate
+    # checkov:skip=CKV_AWS_117:VPC not appropriate
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: false
+        Target: es2022
+        Sourcemap: false
+        EntryPoints:
+          - src/structured-output.ts
+        Format: esm
+        OutExtension:
+          - .js=.mjs
+        Banner:
+          - js=import { createRequire } from 'module'; const require = createRequire(import.meta.url);
+      cfn_nag:
+        rules_to_suppress:
+          - id: W89
+            reason: VPC not appropriate
+          - id: W92
+            reason: Reserved concurrency not appropriate
+    Properties:
+      Handler: structured-output.handler
+      CodeUri: .
+      Role: !GetAtt DurableFunctionRole.Arn
+      DurableConfig:
+        ExecutionTimeout: 900
+        RetentionPeriodInDays: 7
+
+Outputs:
+  PromptChainingFunction:
+    Value: !GetAtt PromptChainingFunction.Arn
+  LlmAsJudgeFunction:
+    Value: !GetAtt LlmAsJudgeFunction.Arn
+  HumanReviewFunction:
+    Value: !GetAtt HumanReviewFunction.Arn
+  AgentFunction:
+    Value: !GetAtt AgentFunction.Arn
+  ParallelInvocationFunction:
+    Value: !GetAtt ParallelInvocationFunction.Arn
+  StructuredOutputFunction:
+    Value: !GetAtt StructuredOutputFunction.Arn
