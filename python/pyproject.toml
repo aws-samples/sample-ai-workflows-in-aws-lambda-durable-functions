@@ -10,7 +10,8 @@ dependencies = [
     "pytest",
     "pytest-mock",
     "ruff>=0.14.6",
-    "boto3"
+    "boto3",
+    "strands-agents"
 ]
 
 
