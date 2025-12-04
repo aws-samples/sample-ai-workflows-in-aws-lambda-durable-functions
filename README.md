@@ -16,6 +16,7 @@ Patterns included:
 - Agent with Tools
 - Parallel Invocation
 - Structured Output
+- Durable Strands Agent
 
 All examples are implemented in both Python and TypeScript.
 
@@ -157,6 +158,23 @@ return context.step(lambda _: extract_contact(text), "extract")
 ```
 
 [TypeScript](typescript/src/structured-output.ts) | [Python](python/src/structured_output.py)
+
+### 7. Durable Strands Agent
+
+Wrap a Strands agent in a durable step for checkpointing.
+- Agent response is checkpointed after successful completion
+- On replay, returns the same result without re-executing the agent
+- Useful as part of larger workflows for deterministic replay
+
+```typescript
+const response = await context.step("strands agent", async () => {
+    const agent = new Agent({ model: new BedrockModel() });
+    const result = await agent.invoke(prompt);
+    return result.lastMessage;
+});
+```
+
+[TypeScript](typescript/src/durable-strands-agent.ts) | [Python](python/src/durable_strands_agent.py)
 
 ## Prerequisites
 

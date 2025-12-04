@@ -1,4 +1,4 @@
-This project contains sample code for six patterns implementing AI workflows with Lambda durable executions.
+This project contains sample code for patterns implementing AI workflows with Lambda durable executions.
 
 Each pattern is implemented in Python (`/python`) and Typescript (`/typescript`)
 
