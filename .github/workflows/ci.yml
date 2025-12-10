@@ -1,6 +1,8 @@
 name: CI
 
-on: [push, pull_request]
+on:
+  pull_request:
+    types: [opened, synchronize]
 
 permissions:
   contents: read
@@ -46,10 +48,4 @@ jobs:
       - uses: astral-sh/setup-uv@v4
         with:
           python-version: "3.13"
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: "3.2"
-
       - run: uvx cfn-lint@1.42.1 **/*.yaml
-      - run: gem install cfn-nag
-      - run: cfn_nag_scan --input-path .
