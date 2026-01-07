@@ -5,9 +5,25 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
+    groups:
+      node-major:
+        update-types:
+          - "major"
+      node-minor-patch:
+        update-types:
+          - "minor"
+          - "patch"
 
   - package-ecosystem: "pip"
     directory: "/python"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
+    groups:
+      python-major:
+        update-types:
+          - "major"
+      python-minor-patch:
+        update-types:
+          - "minor"
+          - "patch"
