@@ -1,4 +1,7 @@
-import { LocalDurableTestRunner } from "@aws/durable-execution-sdk-js-testing";
+import {
+	LocalDurableTestRunner,
+	WaitingOperationStatus,
+} from "@aws/durable-execution-sdk-js-testing";
 import {
 	afterAll,
 	beforeAll,
@@ -89,7 +92,9 @@ vi.mock("@aws-sdk/client-bedrock-runtime", () => ({
 	ContentBlock: vi.fn(),
 }));
 
-beforeAll(() => LocalDurableTestRunner.setupTestEnvironment());
+beforeAll(() =>
+	LocalDurableTestRunner.setupTestEnvironment({ skipTime: true }),
+);
 afterAll(() => LocalDurableTestRunner.teardownTestEnvironment());
 beforeEach(() => {
 	callCount = 0;
@@ -104,7 +109,7 @@ describe("Agent", () => {
 			payload: { prompt: "What's the weather?" },
 		});
 
-		await callbackOp.waitForData();
+		await callbackOp.waitForData(WaitingOperationStatus.SUBMITTED);
 		await callbackOp.sendCallbackSuccess("Approved");
 
 		const result = await resultPromise;
