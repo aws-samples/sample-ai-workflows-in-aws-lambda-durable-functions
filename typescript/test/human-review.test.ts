@@ -1,4 +1,7 @@
-import { LocalDurableTestRunner } from "@aws/durable-execution-sdk-js-testing";
+import {
+	LocalDurableTestRunner,
+	WaitingOperationStatus,
+} from "@aws/durable-execution-sdk-js-testing";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { handler } from "../src/human-review.js";
 
@@ -11,7 +14,9 @@ vi.mock("@aws-sdk/client-bedrock-runtime", () => ({
 	ConverseCommand: vi.fn(),
 }));
 
-beforeAll(() => LocalDurableTestRunner.setupTestEnvironment());
+beforeAll(() =>
+	LocalDurableTestRunner.setupTestEnvironment({ skipTime: true }),
+);
 afterAll(() => LocalDurableTestRunner.teardownTestEnvironment());
 
 describe("Human Review", () => {
@@ -22,7 +27,7 @@ describe("Human Review", () => {
 
 		const resultPromise = runner.run({ payload: { document: "Invoice #123" } });
 
-		await callbackOp.waitForData();
+		await callbackOp.waitForData(WaitingOperationStatus.SUBMITTED);
 		await callbackOp.sendCallbackSuccess(JSON.stringify({ approved: true }));
 
 		const result = await resultPromise;
@@ -40,7 +45,7 @@ describe("Human Review", () => {
 
 		const resultPromise = runner.run();
 
-		await callbackOp.waitForData();
+		await callbackOp.waitForData(WaitingOperationStatus.SUBMITTED);
 		await callbackOp.sendCallbackSuccess(
 			JSON.stringify({ approved: false, notes: "Invalid document" }),
 		);
