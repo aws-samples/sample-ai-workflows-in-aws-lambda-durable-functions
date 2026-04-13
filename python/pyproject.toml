@@ -9,7 +9,7 @@ dependencies = [
     "pydantic",
     "pytest",
     "pytest-mock",
-    "ruff>=0.14.6",
+    "ruff>=0.15.10",
     "boto3",
     "strands-agents"
 ]
