@@ -17,6 +17,6 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-    "ty>=0.0.1a28",
+    "ty>=0.0.29",
     "aws-durable-execution-sdk-python-testing",
 ]
