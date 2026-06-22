@@ -10,15 +10,15 @@
 	"dependencies": {
 		"@aws-lambda-powertools/logger": "^2.33.1",
 		"@aws-sdk/client-bedrock-runtime": "^3.1068.0",
-		"@aws/durable-execution-sdk-js": "^1.1.7",
-		"@strands-agents/sdk": "^0.7.0",
+		"@aws/durable-execution-sdk-js": "^2.0.0",
+		"@strands-agents/sdk": "^1.6.0",
 		"zod": "^4.4.3"
 	},
 	"devDependencies": {
 		"@aws/durable-execution-sdk-js-testing": "^1.1.1",
 		"@biomejs/biome": "2.5.0",
 		"@types/aws-lambda": "^8.10.162",
-		"@types/node": "^25.9.3",
+		"@types/node": "^26.0.0",
 		"esbuild": "^0.28.1",
 		"typescript": "^6.0.3",
 		"vitest": "^4.1.9"
