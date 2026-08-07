@@ -11,9 +11,11 @@ from src.durable_strands_agent import handler
 def mock_strands():
     mock_agent = MagicMock()
     mock_agent.return_value.message = {"content": [{"text": "Paris"}]}
-    with patch("src.durable_strands_agent.Agent", return_value=mock_agent):
-        with patch("src.durable_strands_agent.BedrockModel"):
-            yield mock_agent
+    with (
+        patch("src.durable_strands_agent.Agent", return_value=mock_agent),
+        patch("src.durable_strands_agent.BedrockModel"),
+    ):
+        yield mock_agent
 
 
 def test_strands_agent_response_is_checkpointed(mock_strands):

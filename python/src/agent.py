@@ -1,4 +1,5 @@
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 import boto3
 from aws_durable_execution_sdk_python import DurableContext, durable_execution
@@ -42,8 +43,9 @@ TOOLS: list[AgentTool] = [
                 }
             },
         },
-        execute=lambda input,
-        ctx: f"The weather in {input.get('location', 'unknown')} is sunny, 72°F.",
+        execute=lambda input, ctx: (
+            f"The weather in {input.get('location', 'unknown')} is sunny, 72°F."
+        ),
     ),
     AgentTool(
         tool_spec={
@@ -104,7 +106,7 @@ def handler(event: dict, context: DurableContext):
                 tool_use = block["toolUse"]
                 tool = tools_by_name[tool_use["name"]]
                 result = context.run_in_child_context(
-                    lambda child_ctx: tool.execute(
+                    lambda child_ctx, tool=tool, tool_use=tool_use: tool.execute(
                         tool_use.get("input", {}), child_ctx
                     ),
                     f"tool:{tool_use['name']}",
