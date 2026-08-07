@@ -20,7 +20,11 @@ def handler(event: dict, context: DurableContext):
         MODELS,
         lambda ctx, model_id, idx, items: {
             "modelId": model_id,
-            "answer": converse(model_id, question),
+            # This map is unbatched, so model_id is always a string.
+            "answer": converse(
+                model_id,  # ty: ignore[invalid-argument-type]
+                question,
+            ),
         },
         "Get candidate answers",
     )
